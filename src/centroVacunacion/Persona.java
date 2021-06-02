@@ -16,6 +16,6 @@ public class Persona {
 	
 	@Override
 	public String toString() {
-		return DNI.toString();
+		return "DNI = " + DNI.toString();
 	}
 }

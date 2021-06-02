@@ -106,14 +106,14 @@ public class TestCentroVacunacion {
 		centroConVacunasVencidas.ingresarVacunas("Pfizer", 10,new Fecha(20,3,2021));
 		centroConVacunasVencidas.ingresarVacunas("Pfizer", 10,new Fecha(20,4,2021));
 
-		assertEquals(20, centroConVacunasVencidas.vacunasDisponibles2("Pfizer"));
+		assertEquals(20, centroConVacunasVencidas.vacunasDisponibles("Pfizer"));
 		
 		// Simulo que hoy es el 19 de mayo 
 		Fecha.setFechaHoy(19,5,2021);
 		
-//		centroConVacunasVencidas.generarTurnos(new Fecha(20,5,2021));
+		centroConVacunasVencidas.generarTurnos(new Fecha(20,5,2021));
 		
-//		assertEquals(10, centroConVacunasVencidas.vacunasDisponibles2("Pfizer"));
+//		assertEquals(10, centroConVacunasVencidas.vacunasDisponibles("Pfizer"));
 //		assertEquals(10, centroConVacunasVencidas.reporteVacunasVencidas().get("Pfizer").intValue());
 	}
 

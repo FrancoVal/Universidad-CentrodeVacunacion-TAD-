@@ -6,7 +6,7 @@ abstract class Vacuna {
 
 	@Override
 	public String toString() {
-		return nombre.toString();
+		return "Vacuna = " + nombre.toString()+"\n";
 	}
 
 	Vacuna(String nombre, int grados) {

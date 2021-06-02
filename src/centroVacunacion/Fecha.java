@@ -105,6 +105,12 @@ public class Fecha implements Comparable<Fecha> {
 	public int hashCode() {
 		return fecha == null ? 0 : fecha.hashCode();
 	}
+
+	@Override
+	public String toString() {
+		return "Fecha de vacunación = " + fecha;
+	}
+	
 	
 	
 
