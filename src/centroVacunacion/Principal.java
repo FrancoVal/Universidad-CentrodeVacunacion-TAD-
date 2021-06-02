@@ -24,7 +24,7 @@ public class Principal {
 		centro.generarTurnos(fTurnos);
 
 		System.out.println("-------------- Turnos -------------");
-		System.out.println(centro.turnosConFecha(fTurnos));
+//		System.out.println(centro.turnosConFecha(fTurnos));
 		System.out.println("-----------------------------------");
 		System.out.println();
 		
