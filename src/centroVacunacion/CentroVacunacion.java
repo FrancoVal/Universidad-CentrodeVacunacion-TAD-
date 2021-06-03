@@ -16,6 +16,7 @@ class CentroVacunacion {
 	Map<Vacuna, Integer> vacunasTotales = new HashMap<Vacuna, Integer>();
 
 	Fecha fecha;
+	Fecha fechaHoy = new Fecha(2,6,2021);
 	int cantidadTurnosRealizados = 0;
 
 	public CentroVacunacion(String nombreCentro, int capacidadDiariaVacunacion) {
@@ -48,7 +49,7 @@ class CentroVacunacion {
 			}
 		}
 	}
-
+	
 	public int vacunasDisponibles() {
 		return this.cantidadVacunasTotales;
 	}
@@ -111,11 +112,7 @@ class CentroVacunacion {
 	public void vacunarInscripto(Integer DNI, Fecha fecha) {
 		for (Turno tur : listadoTurnos) {
 			if (tur.persona.DNI.equals(DNI) && tur.persona.fecha.equals(fecha)) {
-				tur.personaVacunada = true;
-			} else if (tur.persona.fecha.anterior(fecha)) {
-				listadoTurnos.remove(tur);
-			} else if (tur.persona.fecha.posterior(fecha)) {
-				throw new RuntimeException("Su fecha de vacunación todavía no llegó.");
+				tur.seVacuno();
 			}
 		}
 	}
@@ -127,11 +124,11 @@ class CentroVacunacion {
 	 * vacuno/agregado a la lista de vacunados(fecha)
 	 */
 
-	public Map<Integer,Vacuna> reporteVacunacion() {
-		Map<Integer,Vacuna> listadoVacunados = new HashMap<Integer,Vacuna>();
+	public Map<Integer, Vacuna> reporteVacunacion() {
+		Map<Integer, Vacuna> listadoVacunados = new HashMap<Integer, Vacuna>();
 		for (Turno turno : listadoTurnos) {
 			if (turno.personaVacunada) {
-				listadoVacunados.put(turno.persona.DNI,turno.vacuna);
+				listadoVacunados.put(turno.persona.DNI, turno.vacuna);
 			}
 		}
 		return listadoVacunados;
@@ -139,8 +136,8 @@ class CentroVacunacion {
 
 	public List<Turno> turnosConFecha(Fecha fecha) {
 		List<Turno> turnosConFecha = new ArrayList<Turno>();
-		for(Turno tur : listadoTurnos) {
-			if(tur.fecha.equals(fecha)) {
+		for (Turno tur : listadoTurnos) {
+			if (tur.fecha.equals(fecha)) {
 				turnosConFecha.add(tur);
 			}
 		}
@@ -149,10 +146,10 @@ class CentroVacunacion {
 
 	public List<Integer> listaDeEspera() {
 		List<Integer> listaDeEsperaPedida = new ArrayList<Integer>();
-		for(Persona per : listaDeEspera) {
+		for (Persona per : listaDeEspera) {
 			listaDeEsperaPedida.add(per.DNI);
 		}
-		return listaDeEsperaPedida; 	
+		return listaDeEsperaPedida;
 	}
 
 	@Override
