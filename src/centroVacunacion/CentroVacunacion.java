@@ -6,17 +6,20 @@ import java.util.List;
 import java.util.Map;
 
 class CentroVacunacion {
-	int capacidadDiariaVacunacion, cantidadVacunasTotales;
+	int capacidadDiariaVacunacion;
 	String nombreCentro;
 
 	List<Turno> listadoTurnos = new ArrayList<Turno>();
 	List<Persona> listaDeEspera = new ArrayList<Persona>();
 
 	Map<Integer, Integer> vacunados = new HashMap<Integer, Integer>();
-	Map<Vacuna, Integer> vacunasTotales = new HashMap<Vacuna, Integer>();
+	Map<Vacuna, Integer> vacunasVencidas = new HashMap<Vacuna, Integer>();
 
+	List<Cargamento> cargamentoVacunas = new ArrayList<Cargamento>();
+
+	Cargamento cargamento;
 	Fecha fecha;
-	Fecha fechaHoy = new Fecha(2,6,2021);
+	Fecha fechaHoy = new Fecha(2, 6, 2021);
 	int cantidadTurnosRealizados = 0;
 
 	public CentroVacunacion(String nombreCentro, int capacidadDiariaVacunacion) {
@@ -26,39 +29,61 @@ class CentroVacunacion {
 
 	// Doubtful
 	public void ingresarVacunas(String nombreVacuna, int cantidadVacuna, Fecha fechaIngreso) {
-		if (cantidadVacuna < 0) {
+		if (cantidadVacuna <= 0) {
 			throw new RuntimeException("No se están agregando vacunas.");
 		} else {
 			if (nombreVacuna.equals("Sputnik")) {
-				vacunasTotales.put(new Sputnik(), cantidadVacuna);
-				this.cantidadVacunasTotales += cantidadVacuna;
+				cargamentoVacunas.add(new Cargamento(new Sputnik(), cantidadVacuna, fechaIngreso, false));
 			} else if (nombreVacuna.equals("Pfizer")) {
-				vacunasTotales.put(new Pfizer(), cantidadVacuna);
-				this.cantidadVacunasTotales += cantidadVacuna;
+				cargamentoVacunas.add(new Cargamento(new Pfizer(), cantidadVacuna, fechaIngreso, false));
 			} else if (nombreVacuna.equals("Moderna")) {
-				vacunasTotales.put(new Moderna(), cantidadVacuna);
-				this.cantidadVacunasTotales += cantidadVacuna;
+				cargamentoVacunas.add(new Cargamento(new Moderna(), cantidadVacuna, fechaIngreso, false));
 			} else if (nombreVacuna.equals("Sinopharm")) {
-				vacunasTotales.put(new Sinopharm(), cantidadVacuna);
-				this.cantidadVacunasTotales += cantidadVacuna;
+				cargamentoVacunas.add(new Cargamento(new Sinopharm(), cantidadVacuna, fechaIngreso, false));
 			} else if (nombreVacuna.equals("AstraZeneca")) {
-				vacunasTotales.put(new AstraZeneca(), cantidadVacuna);
-				this.cantidadVacunasTotales += cantidadVacuna;
+				cargamentoVacunas.add(new Cargamento(new AstraZeneca(), cantidadVacuna, fechaIngreso, false));
 			} else {
 				throw new RuntimeException("El nombre de la vacuna es incorrecto.");
 			}
 		}
 	}
-	
+
+	public void revisarVencimiento() {
+		for (Cargamento carg : cargamentoVacunas) {
+			if (carg.vacuna.nombre == "Pfizer") {
+				if (carg.fechaIngreso.compareTo(fechaHoy) == 1) {
+					carg.seVencio();
+				}
+			} else if (carg.vacuna.nombre == "Moderna") {
+				if (carg.fechaIngreso.compareTo(fechaHoy) == 2) {
+					carg.seVencio();
+				}
+			}
+		}
+	}
+
+	public void quitarVencidas() {
+		for (Cargamento carg : cargamentoVacunas) {
+			if (carg.estanVencidas) {
+				cargamentoVacunas.remove(carg);
+				vacunasVencidas.put(carg.vacuna, carg.cantidad);
+			}
+		}
+	}
+
 	public int vacunasDisponibles() {
-		return this.cantidadVacunasTotales;
+		revisarVencimiento();
+		quitarVencidas();
+		return cargamentoVacunas.size();
 	}
 
 	public int vacunasDisponibles(String nombreVacuna) {
+		revisarVencimiento();
+		quitarVencidas();
 		int cantidadVacunas = 0;
-		for (Vacuna vac : vacunasTotales.keySet()) {
-			if (vac.nombre.equals(nombreVacuna)) {
-				cantidadVacunas += vacunasTotales.get(vac);
+		for (Cargamento carg : cargamentoVacunas) {
+			if (carg.vacuna.nombre.equals(nombreVacuna)) {
+				cantidadVacunas += cargamentoVacunas.size();
 			}
 		}
 		return cantidadVacunas;
@@ -100,29 +125,38 @@ class CentroVacunacion {
 	}
 
 	public Vacuna getVacuna(Persona persona) {
-		for (Vacuna vac : vacunasTotales.keySet()) {
-			if (vacunasTotales.get(vac) > 0) {
-				return vac;
+		for (Cargamento carg : cargamentoVacunas) {
+			if (carg.cantidad > 0) {
+				if (persona.esMayor60() && carg.vacuna.esParaMayores60) {
+					return carg.vacuna;
+				} else {
+					return carg.vacuna;
+				}
 			}
 		}
 		// Si no lo puedo vacunar por no tener mas vacunas, null
 		return null;
 	}
 
-	public void vacunarInscripto(Integer DNI, Fecha fecha) {
+	public void vacunarInscripto(Integer DNI, Fecha fechaDada) {
 		for (Turno tur : listadoTurnos) {
-			if (tur.persona.DNI.equals(DNI) && tur.persona.fecha.equals(fecha)) {
-				tur.seVacuno();
+			//Si ya estabas vacunado tiramos una excepcion.
+			if (!tur.personaVacunada) {
+				if (tur.persona.DNI.equals(DNI) && tur.fecha.equals(fechaDada)) {
+					tur.seVacuno();
+				}
+				/*
+				 * Si tu fecha dada es anterior a la que preguntan es porque ya se te pasó.
+				 * 21/02/2021 < 22/02/2021
+				 */
+				else if (tur.fecha.anterior(fechaDada)) {
+					ingresarVacunas(tur.vacuna.nombre, tur.vacuna.cantidad, tur.fecha);
+				}
+			} else {
+				throw new RuntimeException("La persona ya está vacunada.");
 			}
 		}
 	}
-	/*
-	 * si no asistio debo actualizar stock de vacunas, sacar de la lista de espera
-	 * correspondiete relacionarlo con que si NO esta agregado al hashmap/lista de
-	 * ya vacunados con esa misma fecha?? tambien puedo poner un fecha.siguiente o
-	 * algo asi + un dia o compararlo asi para saber si paso un dia y no se
-	 * vacuno/agregado a la lista de vacunados(fecha)
-	 */
 
 	public Map<Integer, Vacuna> reporteVacunacion() {
 		Map<Integer, Vacuna> listadoVacunados = new HashMap<Integer, Vacuna>();
@@ -150,6 +184,10 @@ class CentroVacunacion {
 			listaDeEsperaPedida.add(per.DNI);
 		}
 		return listaDeEsperaPedida;
+	}
+	
+	public List<Vacuna> vacunasVencidas(){
+		return vacunasVencidas();
 	}
 
 	@Override
