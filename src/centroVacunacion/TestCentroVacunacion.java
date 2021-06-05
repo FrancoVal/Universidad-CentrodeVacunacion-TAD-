@@ -83,6 +83,10 @@ public class TestCentroVacunacion {
 		centro.generarTurnos(fecha);
 		System.out.println(centro.listadoTurnos);
 
+<<<<<<< HEAD
+=======
+		
+>>>>>>> d568e250c742c4cb8774cfe776a5879315692a52
 		assertEquals(12, centro.vacunasDisponibles());
 		assertFalse(centro.listaDeEspera().contains(dniAVacunar));
 		assertFalse(centro.reporteVacunacion().keySet().contains(dniAVacunar));
@@ -104,7 +108,11 @@ public class TestCentroVacunacion {
 
 	@Test
 	public void testReporteVacunasVencidas() {
+<<<<<<< HEAD
 
+=======
+		 
+>>>>>>> d568e250c742c4cb8774cfe776a5879315692a52
 		CentroVacunacion centroConVacunasVencidas = new CentroVacunacion("UNGS 2", 5);
 		// Simulo que hoy es el 20 de abril
 		Fecha.setFechaHoy(20, 4, 2021);
@@ -131,6 +139,7 @@ public class TestCentroVacunacion {
 		try {
 			centro.ingresarVacunas("AstraZeneca", 0, new Fecha(20, 3, 2021));
 			fail("Permitió ingresar una vacuna con cantidad 0");
+<<<<<<< HEAD
 		} catch (RuntimeException e) {
 		}
 
@@ -144,13 +153,26 @@ public class TestCentroVacunacion {
 	@Test(expected = RuntimeException.class)
 	public void testGenerarTurnosParaUnaFechaPasada() {
 		centro.generarTurnos(new Fecha(10, 05, 2021));
-	}
+=======
+		} catch (RuntimeException e) { }
+	
+		try { 
+			centro.ingresarVacunas("Moderna", -10, new Fecha(20,3,2021));
+			fail("Permitió ingresar una vacuna con cantidad negativa");
+		} catch (RuntimeException e) { }
+	} 
 
+	@Test(expected = RuntimeException.class)
+	public void testGenerarTurnosParaUnaFechaPasada () {
+		centro.generarTurnos(new Fecha(10,05,2021));
+>>>>>>> d568e250c742c4cb8774cfe776a5879315692a52
+	}
+  
 	@Test(expected = RuntimeException.class)
 	public void testVacunarPersonaNoRegistrada() {
 		centro.vacunarInscripto(17000000, new Fecha(31, 12, 2021));
 	}
-
+  
 	@Test(expected = RuntimeException.class)
 	public void testVacunarPersonaConTurnoParaOtraFecha() {
 		int dniAVacunar = 29959000;

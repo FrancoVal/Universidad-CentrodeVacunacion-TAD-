@@ -10,11 +10,11 @@ class Turno {
 		this.persona = persona;
 		this.vacuna = vacuna;
 		this.fecha = fecha;
-		personaVacunada = false;
+		this.personaVacunada = false;
 	}
 
 	public void seVacuno() {
-		personaVacunada = true;
+		this.personaVacunada = true;
 	}
 	
 	@Override
