@@ -12,7 +12,7 @@ class CentroVacunacion {
 	List<Turno> listadoTurnos = new ArrayList<Turno>();
 	List<Persona> listaDeEspera = new ArrayList<Persona>();
 
-	Map<Integer, Integer> vacunados = new HashMap<Integer, Integer>();
+	List<Turno> vacunados = new ArrayList<Turno>();
 	Map<Vacuna, Integer> vacunasVencidas = new HashMap<Vacuna, Integer>();
 
 	List<Cargamento> cargamentoVacunas = new ArrayList<Cargamento>();
@@ -31,19 +31,19 @@ class CentroVacunacion {
 			throw new RuntimeException("No se están agregando vacunas.");
 		} else {
 			if (nombreVacuna.equals("Sputnik")) {
-				cargamentoVacunas.add(new Cargamento(new Sputnik(), cantidadVacuna, fechaIngreso, false));
+				cargamentoVacunas.add(new Cargamento(new Sputnik(), cantidadVacuna, fechaIngreso));
 				cantidadVacunasTotales += cantidadVacuna;
 			} else if (nombreVacuna.equals("Pfizer")) {
-				cargamentoVacunas.add(new Cargamento(new Pfizer(), cantidadVacuna, fechaIngreso, false));
+				cargamentoVacunas.add(new Cargamento(new Pfizer(), cantidadVacuna, fechaIngreso));
 				cantidadVacunasTotales += cantidadVacuna;
 			} else if (nombreVacuna.equals("Moderna")) {
-				cargamentoVacunas.add(new Cargamento(new Moderna(), cantidadVacuna, fechaIngreso, false));
+				cargamentoVacunas.add(new Cargamento(new Moderna(), cantidadVacuna, fechaIngreso));
 				cantidadVacunasTotales += cantidadVacuna;
 			} else if (nombreVacuna.equals("Sinopharm")) {
-				cargamentoVacunas.add(new Cargamento(new Sinopharm(), cantidadVacuna, fechaIngreso, false));
+				cargamentoVacunas.add(new Cargamento(new Sinopharm(), cantidadVacuna, fechaIngreso));
 				cantidadVacunasTotales += cantidadVacuna;
 			} else if (nombreVacuna.equals("AstraZeneca")) {
-				cargamentoVacunas.add(new Cargamento(new AstraZeneca(), cantidadVacuna, fechaIngreso, false));
+				cargamentoVacunas.add(new Cargamento(new AstraZeneca(), cantidadVacuna, fechaIngreso));
 				cantidadVacunasTotales += cantidadVacuna;
 			} else {
 				throw new RuntimeException("El nombre de la vacuna es incorrecto.");
@@ -51,27 +51,27 @@ class CentroVacunacion {
 		}
 	}
 
-	public void revisarVencimiento() {
+	public void revisarVencimiento(Fecha fecha) {
 		for (Cargamento carg : cargamentoVacunas) {
-			if (carg.vacuna.nombre == "Pfizer") {
-				if (carg.fechaIngreso.compareTo(Fecha.hoy()) <= -1) {
-					carg.seVencio();
-				}
-			} else if (carg.vacuna.nombre == "Moderna") {
-				if (carg.fechaIngreso.compareTo(Fecha.hoy()) <= -2) {
+			if (carg.fechaVencimiento != null) {
+				if (carg.fechaVencimiento.compareTo(fecha) > 0) {
 					carg.seVencio();
 				}
 			}
 		}
 	}
 
-	public void quitarVencidas() {
+	public void quitarVacunasVencidas(Fecha fecha) {
+		revisarVencimiento(fecha);
+		List<Cargamento> cargamentoVacunasVencidas = new ArrayList<Cargamento>();
 		for (Cargamento carg : cargamentoVacunas) {
 			if (carg.estanVencidas) {
-				cargamentoVacunas.remove(carg);
+				cargamentoVacunasVencidas.add(carg);
 				vacunasVencidas.put(carg.vacuna, carg.cantidad);
+				cantidadVacunasTotales -= carg.cantidad;
 			}
 		}
+		cargamentoVacunas.removeAll(cargamentoVacunasVencidas);
 	}
 
 	public int vacunasDisponibles() {
@@ -97,10 +97,21 @@ class CentroVacunacion {
 		generarTurnos(listaDeEspera, fecha, cantidadTurnosRealizados);
 	}
 
-	// Preguntar Germán
+	public void quitarTurnosVencidos(Fecha fecha) {
+		List<Turno> turnosVencidos = new ArrayList<Turno>();
+		for (Turno tur : listadoTurnos) {
+			if (tur.fecha.compareTo(fecha) < 0) {
+				turnosVencidos.add(tur);
+				cargamentoVacunas.add(new Cargamento(tur.vacuna, 1, tur.fecha));
+				cantidadVacunasTotales++;
+			}
+		}
+		listadoTurnos.removeAll(turnosVencidos);
+	}
+
 	private void generarTurnos(List<Persona> listaDeEspera, Fecha fecha, int cantidadTurnosRealizados) {
-		revisarVencimiento();
-		quitarVencidas();
+		quitarVacunasVencidas(fecha);
+		quitarTurnosVencidos(fecha);
 		if (Fecha.hoy().compareTo(fecha) <= 0) {
 			for (Persona per : listaDeEspera) {
 				Vacuna vac = getVacuna(per);
@@ -137,7 +148,8 @@ class CentroVacunacion {
 			if (carg.cantidad > 0) {
 				if (persona.esMayor60() && carg.vacuna.esParaMayores60) {
 					return carg.vacuna;
-				} else {
+				}
+				if (!persona.esMayor60()) {
 					return carg.vacuna;
 				}
 			}
@@ -146,32 +158,39 @@ class CentroVacunacion {
 		return null;
 	}
 
-	public void vacunarInscripto(Integer DNIAVacunar, Fecha fechaDada) {
+	public Turno buscarTurnoONull(Integer DNIAVacunar) {
 		for (Turno tur : listadoTurnos) {
-			// Si ya estabas vacunado tiramos una excepcion.
-			if (!tur.personaVacunada) {
-				if (tur.persona.DNI.equals(DNIAVacunar) && tur.fecha==fechaDada) {
-					tur.seVacuno();
-				}if (tur.fecha!=fechaDada) {
-					throw new RuntimeException("La fecha esta mal.");
-				}if (!tur.persona.DNI.equals(DNIAVacunar)) {
-					throw new RuntimeException("El DNI esta mal.");
-				} else {
-					cargamentoVacunas.add(new Cargamento(tur.vacuna, 1, Fecha.hoy(), false));
-					cantidadVacunasTotales++;
-				}
-			} else {
-				throw new RuntimeException("La persona ya está vacunada.");
+			if (tur.persona.DNI.equals(DNIAVacunar)) {
+				return tur;
 			}
 		}
+		// Si no lo encuentro, devuelvo null
+		return null;
+	}
+
+	public void verificarDatos(Integer DNIAVacunar, Fecha fechaDada) {
+		Turno tur = buscarTurnoONull(DNIAVacunar);
+		if (tur == null) {
+			throw new RuntimeException("El DNI es incorrecto.");
+		}
+		if (tur.fecha != fechaDada) {
+			cargamentoVacunas.add(new Cargamento(tur.vacuna, 1, tur.fecha));
+			cantidadVacunasTotales++;
+			throw new RuntimeException("La fecha es incorrecta.");
+		}
+		tur.seVacuno();
+		listadoTurnos.remove(tur);
+		vacunados.add(tur);
+	}
+
+	public void vacunarInscripto(Integer DNIAVacunar, Fecha fechaDada) {
+		verificarDatos(DNIAVacunar, fechaDada);
 	}
 
 	public Map<Integer, Vacuna> reporteVacunacion() {
 		Map<Integer, Vacuna> listadoVacunados = new HashMap<Integer, Vacuna>();
-		for (Turno turno : listadoTurnos) {
-			if (turno.personaVacunada) {
-				listadoVacunados.put(turno.persona.DNI, turno.vacuna);
-			}
+		for (Turno turno : vacunados) {
+			listadoVacunados.put(turno.persona.DNI, turno.vacuna);
 		}
 		return listadoVacunados;
 	}
@@ -194,8 +213,12 @@ class CentroVacunacion {
 		return listaDeEsperaPedida;
 	}
 
-	public Map<Vacuna, Integer> reporteVacunasVencidas() {
-		return vacunasVencidas;
+	public Map<String, Integer> reporteVacunasVencidas() {
+		Map<String, Integer> vacVencidas = new HashMap<String, Integer>();
+		for (Vacuna vacuna : vacunasVencidas.keySet()) {
+			vacVencidas.put(vacuna.nombre, vacunasVencidas.get(vacuna));
+		}
+		return vacVencidas;
 	}
 
 	@Override
