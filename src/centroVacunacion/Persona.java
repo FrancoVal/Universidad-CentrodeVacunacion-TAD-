@@ -8,7 +8,7 @@ public class Persona {
 	private Fecha fechaNacimiento;
 
 	public Persona(Integer DNI, Fecha fechaNacimiento, boolean personaTieneEnfermedad, boolean personaTrabajaSalud) {
-		if (Fecha.diferenciaAnios(Fecha.hoy(), fechaNacimiento) >= 18) {
+		if (esMayor18(fechaNacimiento)) {
 			this.DNI = DNI;
 			this.fechaNacimiento = fechaNacimiento;
 			this.personaTieneEnfermedad = personaTieneEnfermedad;
@@ -18,7 +18,7 @@ public class Persona {
 		}
 	}
 
-	public boolean esMayor18() {
+	public boolean esMayor18(Fecha fechaNacimiento) {
 		return (Fecha.diferenciaAnios(Fecha.hoy(), fechaNacimiento) >= 18);
 	}
 

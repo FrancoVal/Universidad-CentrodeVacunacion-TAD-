@@ -77,8 +77,11 @@ public class TestCentroVacunacion {
 		assertEquals(20, centro.vacunasDisponibles());
 		assertTrue(centro.listaDeEspera().contains(dniAVacunar));
 		assertFalse(centro.reporteVacunacion().containsKey(dniAVacunar));
+		System.out.println(centro.listaDeEspera);
 
 		centro.generarTurnos(fecha);
+		System.out.println(centro.listadoTurnos);
+
 		
 		assertEquals(12, centro.vacunasDisponibles());
 		assertFalse(centro.listaDeEspera().contains(dniAVacunar));
@@ -102,7 +105,7 @@ public class TestCentroVacunacion {
 	
 	@Test
 	public void testReporteVacunasVencidas() {
-		
+		 
 		CentroVacunacion centroConVacunasVencidas = new CentroVacunacion("UNGS 2", 5);
 		// Simulo que hoy es el 20 de abril
 		Fecha.setFechaHoy(20,4,2021);
@@ -117,7 +120,7 @@ public class TestCentroVacunacion {
 		centroConVacunasVencidas.generarTurnos(new Fecha(20,5,2021));
 		
 		assertEquals(10, centroConVacunasVencidas.vacunasDisponibles("Pfizer"));
-//		assertEquals(10, centroConVacunasVencidas.reporteVacunasVencidas().get("Pfizer").intValue());
+		assertEquals(10, centroConVacunasVencidas.reporteVacunasVencidas().get("Pfizer").intValue());
 	}
 
 	/*************************************************************************/
@@ -131,22 +134,22 @@ public class TestCentroVacunacion {
 			fail("Permitió ingresar una vacuna con cantidad 0");
 		} catch (RuntimeException e) { }
 	
-		try {
+		try { 
 			centro.ingresarVacunas("Moderna", -10, new Fecha(20,3,2021));
 			fail("Permitió ingresar una vacuna con cantidad negativa");
 		} catch (RuntimeException e) { }
-	}
+	} 
 
 	@Test(expected = RuntimeException.class)
-	public void testGenerarTurnosParaUnaFechaPasada() {
+	public void testGenerarTurnosParaUnaFechaPasada () {
 		centro.generarTurnos(new Fecha(10,05,2021));
 	}
-
+  
 	@Test(expected = RuntimeException.class)
 	public void testVacunarPersonaNoRegistrada() {
 		centro.vacunarInscripto(17000000,new Fecha(31,12,2021));
 	}
-
+  
 	@Test(expected = RuntimeException.class)
 	public void testVacunarPersonaConTurnoParaOtraFecha() {
 		int dniAVacunar=29959000;
