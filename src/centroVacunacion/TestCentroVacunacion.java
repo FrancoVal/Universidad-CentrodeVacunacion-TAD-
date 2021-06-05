@@ -15,18 +15,20 @@ public class TestCentroVacunacion {
 		centro.ingresarVacunas("Sputnik", 10,new Fecha(20,3,2021));
 		centro.ingresarVacunas("AstraZeneca", 10,new Fecha(20,3,2021));
 
-		centro.inscribirPersona(34701000, new Fecha(1, 5, 1989), false, false);
-		centro.inscribirPersona(29959000, new Fecha(20, 11, 1982), false, true);
-		centro.inscribirPersona(24780201, new Fecha(1, 6, 1972), true, false);
-		centro.inscribirPersona(29223000, new Fecha(2, 5, 1982), false, true);
-		centro.inscribirPersona(13000000, new Fecha(1, 5, 1958), true, false);
-		centro.inscribirPersona(13000050, new Fecha(20, 6, 1958), false, true);
-		centro.inscribirPersona(14000000, new Fecha(1, 1, 1961), false, false);
-		centro.inscribirPersona(14005000, new Fecha(20, 12, 1961), true, false);
+		centro.inscribirPersona(34701000, new Fecha(1, 5, 1989), false, false);  // 32 NS NP 4
+		centro.inscribirPersona(29959000, new Fecha(20, 11, 1982), false, true); // 38 S  NP 1
+		centro.inscribirPersona(24780201, new Fecha(1, 6, 1972), true, false);   // 49 NS P  3
+		centro.inscribirPersona(29223000, new Fecha(2, 5, 1982), false, true);   // 39 S  NP 1
+		centro.inscribirPersona(13000000, new Fecha(1, 5, 1958), true, false);   // 63 NS P  2
+		centro.inscribirPersona(13000050, new Fecha(20, 6, 1958), false, true);  // 62 S  NP 1
+		centro.inscribirPersona(14000000, new Fecha(1, 1, 1961), false, false);  // 60 NS NP 2
+		centro.inscribirPersona(14005000, new Fecha(20, 12, 1961), true, false); // 59 NS P  3
 	}
 
 	@Test
 	public void testIngresarVacunas() {
+		Fecha.setFechaHoy(15,4,2021);
+		
 		assertEquals(20, centro.vacunasDisponibles());
 
 		centro.ingresarVacunas("Pfizer", 10,new Fecha(20,3,2021));
@@ -87,7 +89,7 @@ public class TestCentroVacunacion {
 		assertTrue(centro.reporteVacunacion().keySet().contains(dniAVacunar));
 		
 		
-		// Simulo que pasÃ³ la fecha del turno y reviso que los turnos no
+		// Simulo que pasó la fecha del turno y reviso que los turnos no
 		// cumplidos  devuelvan las vacunas al STOCK y no quede gente en
 		// lista de espera.
 		Fecha.setFechaHoy(2, 7, 2021);
@@ -102,8 +104,9 @@ public class TestCentroVacunacion {
 	public void testReporteVacunasVencidas() {
 		
 		CentroVacunacion centroConVacunasVencidas = new CentroVacunacion("UNGS 2", 5);
-		Fecha.setFechaHoy();
-		centroConVacunasVencidas.ingresarVacunas("Pfizer", 10,new Fecha(20,3,2021));
+		// Simulo que hoy es el 20 de abril
+		Fecha.setFechaHoy(20,4,2021);
+		centroConVacunasVencidas.ingresarVacunas("Pfizer", 10,new Fecha(30,3,2021));
 		centroConVacunasVencidas.ingresarVacunas("Pfizer", 10,new Fecha(20,4,2021));
 
 		assertEquals(20, centroConVacunasVencidas.vacunasDisponibles("Pfizer"));
@@ -113,7 +116,7 @@ public class TestCentroVacunacion {
 		
 		centroConVacunasVencidas.generarTurnos(new Fecha(20,5,2021));
 		
-//		assertEquals(10, centroConVacunasVencidas.vacunasDisponibles("Pfizer"));
+		assertEquals(10, centroConVacunasVencidas.vacunasDisponibles("Pfizer"));
 //		assertEquals(10, centroConVacunasVencidas.reporteVacunasVencidas().get("Pfizer").intValue());
 	}
 
@@ -125,12 +128,12 @@ public class TestCentroVacunacion {
 	public void testIngresarVacunasConCantidadInvalida() {
 		try {
 			centro.ingresarVacunas("AstraZeneca", 0, new Fecha(20,3,2021));
-			fail("PermitiÃ³ ingresar una vacuna con cantidad 0");
+			fail("Permitió ingresar una vacuna con cantidad 0");
 		} catch (RuntimeException e) { }
 	
 		try {
 			centro.ingresarVacunas("Moderna", -10, new Fecha(20,3,2021));
-			fail("PermitiÃ³ ingresar una vacuna con cantidad negativa");
+			fail("Permitió ingresar una vacuna con cantidad negativa");
 		} catch (RuntimeException e) { }
 	}
 

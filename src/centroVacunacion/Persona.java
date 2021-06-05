@@ -5,11 +5,10 @@ public class Persona {
 	boolean personaTieneEnfermedad;
 	boolean personaTrabajaSalud;
 	Integer DNI;
-	Fecha fechaNacimiento;
-	Fecha fechaHoy;
+	private Fecha fechaNacimiento;
 
 	public Persona(Integer DNI, Fecha fechaNacimiento, boolean personaTieneEnfermedad, boolean personaTrabajaSalud) {
-		if (esMayor18()) {
+		if (Fecha.diferenciaAnios(Fecha.hoy(), fechaNacimiento) >= 18) {
 			this.DNI = DNI;
 			this.fechaNacimiento = fechaNacimiento;
 			this.personaTieneEnfermedad = personaTieneEnfermedad;
@@ -18,19 +17,13 @@ public class Persona {
 			throw new RuntimeException("La persona es menor de 18 años e inadmisible para vacunar.");
 		}
 	}
-	
+
 	public boolean esMayor18() {
-		if (Fecha.diferenciaAnios(fechaHoy, fechaNacimiento) >= 18) {
-			return true;
-		}
-		return false;
+		return (Fecha.diferenciaAnios(Fecha.hoy(), fechaNacimiento) >= 18);
 	}
 
 	public boolean esMayor60() {
-		if (Fecha.diferenciaAnios(fechaHoy, fechaNacimiento) >= 60) {
-			return true;
-		}
-		return false;
+		return (Fecha.diferenciaAnios(Fecha.hoy(), fechaNacimiento) >= 60);
 	}
 
 	@Override
