@@ -2,7 +2,6 @@ package centroVacunacion;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -13,15 +12,9 @@ class CentroVacunacion {
 	List<Turno> listadoTurnos = new ArrayList<Turno>();
 	List<Persona> listaDeEspera = new ArrayList<Persona>();
 
-<<<<<<< HEAD
 	List<Turno> vacunados = new ArrayList<Turno>();
 	Map<Vacuna, Integer> vacunasVencidas = new HashMap<Vacuna, Integer>();
 
-=======
-	Map<Integer, Integer> vacunados = new HashMap<Integer, Integer>();
-	Map<Vacuna, Integer> vacunasVencidas = new HashMap<Vacuna, Integer>(); 
-	
->>>>>>> d568e250c742c4cb8774cfe776a5879315692a52
 	List<Cargamento> cargamentoVacunas = new ArrayList<Cargamento>();
 
 	int cantidadTurnosRealizados = 0;
@@ -67,15 +60,9 @@ class CentroVacunacion {
 			}
 		}
 	}
-<<<<<<< HEAD
 
 	public void quitarVacunasVencidas(Fecha fecha) {
 		revisarVencimiento(fecha);
-=======
- 
-	public void quitarVencidas() {
-		revisarVencimiento();
->>>>>>> d568e250c742c4cb8774cfe776a5879315692a52
 		List<Cargamento> cargamentoVacunasVencidas = new ArrayList<Cargamento>();
 		for (Cargamento carg : cargamentoVacunas) {
 			if (carg.estanVencidas) {
@@ -110,7 +97,6 @@ class CentroVacunacion {
 		generarTurnos(listaDeEspera, fecha, cantidadTurnosRealizados);
 	}
 
-<<<<<<< HEAD
 	public void quitarTurnosVencidos(Fecha fecha) {
 		List<Turno> turnosVencidos = new ArrayList<Turno>();
 		for (Turno tur : listadoTurnos) {
@@ -126,10 +112,6 @@ class CentroVacunacion {
 	private void generarTurnos(List<Persona> listaDeEspera, Fecha fecha, int cantidadTurnosRealizados) {
 		quitarVacunasVencidas(fecha);
 		quitarTurnosVencidos(fecha);
-=======
-	private void generarTurnos(List<Persona> listaDeEspera, Fecha fecha, int cantidadTurnosRealizados) {
-		quitarVencidas();
->>>>>>> d568e250c742c4cb8774cfe776a5879315692a52
 		if (Fecha.hoy().compareTo(fecha) <= 0) {
 			for (Persona per : listaDeEspera) {
 				Vacuna vac = getVacuna(per);
@@ -176,23 +158,10 @@ class CentroVacunacion {
 		return null;
 	}
 
-<<<<<<< HEAD
 	public Turno buscarTurnoONull(Integer DNIAVacunar) {
 		for (Turno tur : listadoTurnos) {
 			if (tur.persona.DNI.equals(DNIAVacunar)) {
 				return tur;
-=======
-	public void verificarDatos(Integer DNIAVacunar, Fecha fechaDada) {
-		for (Turno tur : listadoTurnos) {
-			if (tur.persona.DNI.equals(DNIAVacunar) && tur.fecha.equals(fechaDada)) {
-				tur.seVacuno();
-			} else if (!tur.fecha.equals(fechaDada)) {
-				cargamentoVacunas.add(new Cargamento(tur.vacuna, 1, Fecha.hoy(), false));
-				cantidadVacunasTotales++;
-			} else {
-				cargamentoVacunas.add(new Cargamento(tur.vacuna, 1, Fecha.hoy(), false));
-				cantidadVacunasTotales++;
->>>>>>> d568e250c742c4cb8774cfe776a5879315692a52
 			}
 		}
 		// Si no lo encuentro, devuelvo null
@@ -216,10 +185,6 @@ class CentroVacunacion {
 
 	public void vacunarInscripto(Integer DNIAVacunar, Fecha fechaDada) {
 		verificarDatos(DNIAVacunar, fechaDada);
-	}
-
-	public void vacunarInscripto(Integer DNIAVacunar, Fecha fechaDada) {
-			verificarDatos(DNIAVacunar, fechaDada);
 	}
 
 	public Map<Integer, Vacuna> reporteVacunacion() {
@@ -247,17 +212,10 @@ class CentroVacunacion {
 		}
 		return listaDeEsperaPedida;
 	}
-<<<<<<< HEAD
 
 	public Map<String, Integer> reporteVacunasVencidas() {
 		Map<String, Integer> vacVencidas = new HashMap<String, Integer>();
 		for (Vacuna vacuna : vacunasVencidas.keySet()) {
-=======
-	
-	public Map<String, Integer> reporteVacunasVencidas() {
-		Map<String, Integer>vacVencidas=new HashMap<String, Integer>();
-		for(Vacuna vacuna: vacunasVencidas.keySet()) {
->>>>>>> d568e250c742c4cb8774cfe776a5879315692a52
 			vacVencidas.put(vacuna.nombre, vacunasVencidas.get(vacuna));
 		}
 		return vacVencidas;
