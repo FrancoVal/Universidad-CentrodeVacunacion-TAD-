@@ -18,10 +18,12 @@ public class Persona {
 		}
 	}
 
+	//Método utilizado para ver con la fecha de nacimiento de la persona si esta es mayor a 18.
 	public boolean esMayor18(Fecha fechaNacimiento) {
 		return (Fecha.diferenciaAnios(Fecha.hoy(), fechaNacimiento) >= 18);
 	}
-
+	
+	//Método utilizado para ver con la fecha de nacimiento de la persona si esta es mayor a 60.
 	public boolean esMayor60() {
 		return (Fecha.diferenciaAnios(Fecha.hoy(), fechaNacimiento) >= 60);
 	}

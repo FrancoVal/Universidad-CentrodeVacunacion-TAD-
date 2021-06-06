@@ -13,6 +13,7 @@ class Turno {
 		this.personaVacunada = false;
 	}
 
+	//Actualiza el booleano false a true.
 	public void seVacuno() {
 		this.personaVacunada = true;
 	}

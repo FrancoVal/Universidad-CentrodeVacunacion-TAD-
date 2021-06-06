@@ -19,12 +19,16 @@ public class Cargamento {
 		estanVencidas = true;
 	}
 
+	/*
+	 * Nos fijamos con una nueva fecha si las vacunas no tienen fecha de vencimiento
+	 * (==null) o avanzamos 30 o 60 dias para ver si alguna de las dos vencio
+	 */
 	public Fecha calcularVencimiento(Vacuna vac, Fecha fechaIngreso) {
 		Fecha fechaVencimiento = new Fecha(fechaIngreso.dia(), fechaIngreso.mes(), fechaIngreso.anio());
 		if (vac.duracionVacuna == null) {
 			return null;
 		}
-		for (int i = 0; i < vac.duracionVacuna+1; i++) {
+		for (int i = 0; i < vac.duracionVacuna + 1; i++) {
 			fechaVencimiento.avanzarUnDia();
 		}
 		return fechaVencimiento;
@@ -36,6 +40,4 @@ public class Cargamento {
 				+ ", fechaVencimiento=" + fechaVencimiento + ", estanVencidas=" + estanVencidas + "]";
 	}
 
-	
-	
 }
