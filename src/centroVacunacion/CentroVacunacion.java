@@ -63,7 +63,7 @@ class CentroVacunacion {
 	// Método encargado de agregar al listado de espera nuevas personas.
 	public void inscribirPersona(Integer DNI, Fecha fecha, boolean personaTieneEnfermedad,
 			boolean personaTrabajaSalud) {
-		Persona per = new Persona(DNI, fecha, personaTrabajaSalud, personaTrabajaSalud);
+		Persona per = new Persona(DNI, fecha, personaTieneEnfermedad, personaTrabajaSalud);
 		if (per.personaTrabajaSalud) {
 			listaDeEspera.add(per);
 		} else if (per.esMayor60()) {
@@ -127,7 +127,7 @@ class CentroVacunacion {
 	public int vacunasDisponibles(String nombreVacuna) {
 		int cantidadVacunas = 0;
 		for (Cargamento carg : cargamentoVacunas) {
-			if (carg.vacuna.nombre == nombreVacuna) {
+			if (carg.vacuna.nombre.equals(nombreVacuna)) {
 				cantidadVacunas += carg.cantidad;
 			}
 		}
