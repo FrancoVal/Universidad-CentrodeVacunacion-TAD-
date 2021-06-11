@@ -13,14 +13,12 @@ class Turno {
 		this.personaVacunada = false;
 	}
 
-	//Actualiza el booleano false a true.
 	public void seVacuno() {
 		this.personaVacunada = true;
 	}
 	
 	@Override
 	public String toString() {
-		return "{"+persona.toString()+"}"+"{"+ fecha.toString()+"}"+"{"+vacuna.toString()+"}";
-		
+		return "{"+persona.toString()+"}"+"{"+ fecha.toString()+"}"+"{"+vacuna.toString()+"}\n";
 	}
 }

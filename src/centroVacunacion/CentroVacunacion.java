@@ -6,6 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 class CentroVacunacion {
+	/*
+	 * IREP: cantidadTurnosRealizados <=cantidadVacunasTotales. En listaDeEspera no
+	 * puede estar la misma persona que en la lista vacunados.per
+	 */
+
 	int capacidadDiariaVacunacion;
 	String nombreCentro;
 
@@ -58,7 +63,15 @@ class CentroVacunacion {
 	// Método encargado de agregar al listado de espera nuevas personas.
 	public void inscribirPersona(Integer DNI, Fecha fecha, boolean personaTieneEnfermedad,
 			boolean personaTrabajaSalud) {
-		listaDeEspera.add(new Persona(DNI, fecha, personaTieneEnfermedad, personaTrabajaSalud));
+		Persona per = new Persona(DNI, fecha, personaTrabajaSalud, personaTrabajaSalud);
+		if (per.personaTrabajaSalud) {
+			listaDeEspera.add(per);
+		} else if (per.esMayor60()) {
+			listaDeEspera.add(per);
+		} else if (per.personaTieneEnfermedad) {
+			listaDeEspera.add(per);
+		} else
+			listaDeEspera.add(per);
 	}
 
 	/*
